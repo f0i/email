@@ -68,7 +68,22 @@ do {
 
 print("domain");
 do {
-  let #ok(e) = Email.parseOne("a@a.b.c.de");
+  let #ok(_) = Email.parseOne("a@a.b.c.de");
+  let #ok(_) = Email.parseOne("a@a-b.de");
+  let #err(_) = Email.parseOne("a@-a.de");
+  let #err(_) = Email.parseOne("a@a-.de");
+  let #err(_) = Email.parseOne("a@a.b");
+  let #err(_) = Email.parseOne("a@a.b-");
+  let #err(_) = Email.parseOne("a@a..de");
+  let #err(_) = Email.parseOne("a@a.b.c.d");
+  let #err(_) = Email.parseOne("a@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.de");
+  let #err(_) = Email.parseOne("a@de");
+  let #err(_) = Email.parseOne("a@.de");
+  let #err(_) = Email.parseOne("a@de.");
+  let #err(e) = Email.parseOne("a@a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.de");
+
+  print(debug_show e);
+  assert (e == "invalid domain name");
 };
 
 print("full example");

@@ -1,9 +1,10 @@
 import Text "mo:new-base/Text";
 import Iter "mo:new-base/Iter";
 import Debug "mo:new-base/Debug";
+import Runtime "mo:new-base/Runtime";
 module {
 
-  let escapeable = "\"\'()";
+  let escapeable = "\"'()";
   let specialLocal = "!#$%&'*+-/=?^_`{|}~";
 
   public func isValidLocal(c : Char) : Bool {
@@ -57,7 +58,6 @@ module {
   };
 
   public func validateDisplay(input : Text) : Bool {
-    Debug.print(debug_show ("validating", input));
     let iter = Iter.enumerate(input.chars());
     for ((i, c) in iter) {
       // TODO: check for invalid chars
@@ -65,12 +65,73 @@ module {
     return true;
   };
 
-  public func validateDomain(input : Text) : Bool {
-    Debug.print(debug_show ("validating", input));
-    let iter = Iter.enumerate(input.chars());
-    for ((i, c) in iter) {
-      // TODO: check for invalid chars
+  func validateLabel(lbl : Text, isTld : Bool) : Bool {
+    if (lbl.size() < 1 or lbl.size() > 63) { return false };
+    // TLDs must have at least 2 characters
+    if (isTld and lbl.size() < 2) { return false };
+
+    // must not start or end with a hyphen
+    if (Text.startsWith(lbl, #char('-')) or Text.endsWith(lbl, #char('-'))) {
+      return false;
     };
+    //Debug.print(debug_show ("domain label", lbl));
+
+    var isFirst = true;
+    var isLetter = false;
+    var isDigit = false;
+
+    for (c in lbl.chars()) {
+      isLetter := (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z');
+      isDigit := (c >= '0' and c <= '9');
+      let isHyphen = (c == '-');
+
+      if (isTld) {
+        // TLDs can only contain letters
+        if (not isLetter) { return false };
+      } else if (isFirst) {
+        if (not (isLetter or isDigit)) return false;
+        isFirst := false;
+      } else {
+        // other labels can contain letters, digits and hyphens
+        if (not (isLetter or isDigit or isHyphen)) {
+          return false;
+        };
+      };
+    };
+    // last must be digit or letter
+    if (not (isLetter or isDigit)) return false;
+    return true;
+  };
+
+  public func validateDomain(input : Text) : Bool {
+    // domain length check
+    if (input.size() > 253 or input.size() == 0) { return false };
+    //Debug.print(debug_show ("domain", input));
+
+    let labels = Text.split(input, #char('.'));
+
+    // must have at least a TLD and one other label
+
+    let ?first = labels.next() else Runtime.unreachable();
+    var last = first;
+    var numLabels = 1;
+    if (not validateLabel(first, false)) { return false };
+
+    label labelLoop while (true) {
+      switch (labels.next()) {
+        case (null) { break labelLoop };
+        case (?lbl) {
+          if (not validateLabel(lbl, false)) { return false };
+          numLabels += 1;
+          last := lbl;
+        };
+      };
+    };
+    // validate TLD
+    if (not validateLabel(last, true)) { return false };
+
+    if (numLabels < 2) { return false };
+
     return true;
   };
 
