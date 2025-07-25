@@ -6,14 +6,30 @@ import { slice } "utils";
 
 module {
 
-  let escapeable = "\"'()";
   let specialLocal = ".!#$%&'*+-/=?^_`{|}~";
 
+  // text allowed in unquoted string of local part
   public func isValidLocal(c : Char) : Bool {
     if (c >= 'a' and c <= 'z') return true;
     if (c >= 'A' and c <= 'Z') return true;
     if (c >= '0' and c <= '9') return true;
     if (Text.contains(specialLocal, #char(c))) return true;
+    return false;
+  };
+
+  // text allowed in quoted string of local part
+  public func isValidLocalQuoted(c : Char) : Bool {
+    if (c == '\"') return false;
+    if (c >= ' ' and c <= '~') return true;
+    // Debug.print(debug_show ("invalid local quoted", c));
+    return false;
+  };
+
+  // text that is allowed after \
+  public func isEscapeable(c : Char) : Bool {
+    if (c == '\t') return true;
+    if (c >= ' ' and c <= '~') return true;
+    // Debug.print(debug_show ("invalid escaped char", c));
     return false;
   };
 
@@ -41,18 +57,21 @@ module {
       if (i == 0 and c == '\"') {
         quoted := true;
       } else if (c == '\\') {
-        return false;
         if (not quoted) return false;
         escaped := true;
       } else if (escaped) {
         // check if the character can be escaped
-        if (not Text.contains(escapeable, #char c)) return false;
+        if (not isEscapeable(c)) return false;
         escaped := false;
       } else if (c == '\"') {
         // only allowed at the end of quoted string
         return quoted and i == lastIndex;
       } else {
-        if (not isValidLocal(c)) return false;
+        if (quoted) {
+          if (not isValidLocalQuoted(c)) return false;
+        } else {
+          if (not isValidLocal(c)) return false;
+        };
       };
     };
 
