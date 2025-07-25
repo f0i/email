@@ -12,9 +12,14 @@ mops add email
 
 ```motoko
 import Email "mo:email/src/lib";
+import { print } "mo:core/Debug";
 
 // Parse a single email address
 let #ok(email) = Email.parse("John Doe <john.doe@example.com>");
+
+print("Display name: " # email.displayName);
+print("Address: " # Email.toAddress(email));
+
 
 // Parse a list of email addresses
 for (result in Email.parseMultiple("jane.doe@example.com, john.doe@example.com")) {

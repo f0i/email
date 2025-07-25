@@ -72,10 +72,13 @@ module {
     |> Iter.map(_, parse);
   };
 
+  /// Get the email address without comments or display name
   public func toAddress(email : Email) : Text {
     return email.local # "@" # email.domain;
   };
 
+  /// Get the full email address including display name and comments
+  /// All comments will be added to the end of the address
   public func toText(email : Email) : Text {
     let comments = if (email.comments.size() == 0) {
       "";
