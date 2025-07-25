@@ -1,11 +1,11 @@
-import Iter "mo:new-base/Iter";
-import Text "mo:new-base/Text";
-import Array "mo:new-base/Array";
-import { print } "mo:new-base/Debug";
-import Runtime "mo:new-base/Runtime";
-import Char "mo:new-base/Char";
-import List "mo:new-base/List";
-import Debug "mo:new-base/Debug";
+import Iter "mo:core/Iter";
+import Text "mo:core/Text";
+import Array "mo:core/Array";
+import { print } "mo:core/Debug";
+import Runtime "mo:core/Runtime";
+import Char "mo:core/Char";
+import List "mo:core/List";
+import Debug "mo:core/Debug";
 
 module {
   public func slice(s : Text, fromInclusive : Nat, toExclusive : Nat) : Text {

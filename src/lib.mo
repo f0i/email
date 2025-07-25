@@ -1,12 +1,11 @@
 import Utils "utils";
-import Iter "mo:new-base/Iter";
-import Debug "mo:new-base/Debug";
-import { print } "mo:new-base/Debug";
-import Runtime "mo:new-base/Runtime";
-import Result "mo:new-base/Result";
-import Array "mo:new-base/Array";
-import Text "mo:new-base/Text";
-import Array "mo:new-base/Array";
+import Iter "mo:core/Iter";
+import Debug "mo:core/Debug";
+import { print } "mo:core/Debug";
+import Runtime "mo:core/Runtime";
+import Result "mo:core/Result";
+import Array "mo:core/Array";
+import Text "mo:core/Text";
 import { splitPre; splitPost; parseLocal; parseComments; parseDomain } "utils";
 import { validateLocal; validateDisplay; validateDomain } "validate";
 
@@ -14,6 +13,7 @@ module {
   // This comment will not be included in the documentation
   // Use triple slash for documentation
 
+  /// Email address split into its parts
   public type Email = {
     comments : [Text];
     raw : Text;
@@ -23,7 +23,9 @@ module {
   };
   public type Result<T> = Result.Result<T, Text>;
 
-  public func parseOne(input : Text) : Result<Email> {
+  /// Parse and validate a single email address
+  /// returns a Email with the different parts of the address separated
+  public func parse(input : Text) : Result<Email> {
     let parts = Utils.splitOnUnquotedChar(input, '@');
     let ?pre = parts.next() else Runtime.unreachable();
     let ?post = parts.next() else return #err("Missing @ symbol");
@@ -64,9 +66,10 @@ module {
     return #ok({ comments; raw = input; displayName; local; domain });
   };
 
-  public func parse(input : Text) : Iter.Iter<Result<Email>> {
+  /// Parse a string containing multiple email addreses separated by comma
+  public func parseMultiple(input : Text) : Iter.Iter<Result<Email>> {
     Utils.splitOnUnquotedChar(input, ',')
-    |> Iter.map(_, parseOne);
+    |> Iter.map(_, parse);
   };
 
   public func toAddress(email : Email) : Text {
@@ -74,16 +77,16 @@ module {
   };
 
   public func toText(email : Email) : Text {
-    let comments = if (comments.size() == 0) {
+    let comments = if (email.comments.size() == 0) {
       "";
     } else {
-      " " # Text.join(" ", Array.vals(comments));
+      " " # Text.join(" ", email.comments.vals());
     };
     if (email.displayName != "") {
-      return email.displayName # " <" # email.local # "@" # email.domain # ">";
+      return email.displayName # " <" # email.local # "@" # email.domain # ">" # comments;
     };
 
-    return email.local # "@" # email.domain;
+    return email.local # "@" # email.domain # comments;
   };
 
 };

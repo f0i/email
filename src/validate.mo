@@ -1,7 +1,7 @@
-import Text "mo:new-base/Text";
-import Iter "mo:new-base/Iter";
-import Debug "mo:new-base/Debug";
-import Runtime "mo:new-base/Runtime";
+import Text "mo:core/Text";
+import Iter "mo:core/Iter";
+import Debug "mo:core/Debug";
+import Runtime "mo:core/Runtime";
 import { slice } "utils";
 
 module {

@@ -1,4 +1,4 @@
-import { print } "mo:new-base/Debug";
+import { print } "mo:core/Debug";
 import { parseErr } "test-helper"
 
 print("valid");
