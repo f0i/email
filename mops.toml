@@ -1,6 +1,6 @@
 [package]
 name = "email"
-version = "1.0.0"
+version = "0.1.0"
 description = "Parse and validate email addresses"
 repository = "https://github.com/f0i/email"
 keywords = [ "utils,", "email,", "parser" ]
