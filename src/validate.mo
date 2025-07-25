@@ -2,10 +2,12 @@ import Text "mo:new-base/Text";
 import Iter "mo:new-base/Iter";
 import Debug "mo:new-base/Debug";
 import Runtime "mo:new-base/Runtime";
+import { slice } "utils";
+
 module {
 
   let escapeable = "\"'()";
-  let specialLocal = "!#$%&'*+-/=?^_`{|}~";
+  let specialLocal = ".!#$%&'*+-/=?^_`{|}~";
 
   public func isValidLocal(c : Char) : Bool {
     if (c >= 'a' and c <= 'z') return true;
@@ -54,15 +56,42 @@ module {
       };
     };
 
-    return not quoted and not escaped;
+    // Chack if quoted string is completed and last one was not an escape char
+    if (quoted or escaped) return false;
+
+    return true;
   };
 
   public func validateDisplay(input : Text) : Bool {
-    let iter = Iter.enumerate(input.chars());
-    for ((i, c) in iter) {
-      // TODO: check for invalid chars
+    if (input == "") return true;
+    var escaped = false;
+    let lastIndex = input.size() - 1 : Nat;
+
+    if (Text.startsWith(input, #char('\"')) and Text.endsWith(input, #char('\"'))) {
+      // quoted string
+      for ((i, c) in Iter.enumerate(input.chars())) {
+        if (escaped) {
+          escaped := false;
+        } else if (c == '\\') {
+          escaped := true;
+        } else if (c == '\"' and i != 0 and i != lastIndex) {
+          // unescaped quote
+          return false;
+        };
+      };
+
+    } else {
+      // atom
+      label charLoop for (c in input.chars()) {
+        if (c >= 'a' and c <= 'z') continue charLoop;
+        if (c >= 'A' and c <= 'Z') continue charLoop;
+        if (c >= '0' and c <= '9') continue charLoop;
+        if (Text.contains("!#$%&'*+-/=?^_`{|}~ ", #char(c))) continue charLoop;
+        return false;
+      };
     };
-    return true;
+
+    return (not escaped);
   };
 
   func validateLabel(lbl : Text, isTld : Bool) : Bool {

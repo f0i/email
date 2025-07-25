@@ -91,3 +91,11 @@ do {
   let #ok(e) = Email.parseOne("(c 1)Display(c 2) Name (c 3)<(c 4)a@(c 5)a.b.c.de(c 6)>(c 7)");
   print(debug_show e);
 };
+
+print("display name");
+do {
+  let #ok(_) = Email.parseOne("\"John Q. Public\" <john.q.public@example.com>");
+  let #err(_) = Email.parseOne("John\\ Doe <john.doe@example.com>");
+  let #err(e) = Email.parseOne("John \"Doe\" <john.doe@example.com>");
+  assert (e == "Invalid display name: John \"Doe\"");
+};
