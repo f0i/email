@@ -46,7 +46,7 @@ module {
 
     let domainParts = parseDomain(postParts.domain);
 
-    if (not validateDomain(domainParts.domain)) return #err("invalid domain name: " # domainParts.domain);
+    if (not validateDomain(domainParts.domain)) return #err("Invalid domain name: " # domainParts.domain);
     let domain = domainParts.domain;
 
     let comments = Array.flatten([

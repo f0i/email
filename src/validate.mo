@@ -151,6 +151,7 @@ module {
     return true;
   };
 
+  /// Validate a domain name
   public func validateDomain(input : Text) : Bool {
     // domain length check
     if (input.size() > 253 or input.size() == 0) { return false };
@@ -175,10 +176,13 @@ module {
         };
       };
     };
+    if (numLabels < 2) {
+      // not a FQDN -> no TLD
+      return true;
+    };
+
     // validate TLD
     if (not validateLabel(last, true)) { return false };
-
-    if (numLabels < 2) { return false };
 
     return true;
   };

@@ -5,6 +5,7 @@ import { trap } "mo:new-base/Runtime";
 import Text "mo:new-base/Text";
 
 module {
+
   public func parseOk(input : Text, expectedEmail : Text) {
     let parsed = Email.parseOne(input);
     switch (parsed) {
@@ -19,4 +20,19 @@ module {
       };
     };
   };
+
+  public func parseErr(input : Text, expectedErr : Text) {
+    let parsed = Email.parseOne(input);
+    switch (parsed) {
+      case (#ok(e)) {
+        trap("Expected email " # input # " to fail parsing with " # expectedErr # " but it passed: " # debug_show e);
+      };
+      case (#err(e)) {
+        if (not Text.startsWith(e, #text expectedErr)) {
+          trap("Expected error " # expectedErr # " but got " # e # " for " # input);
+        };
+      };
+    };
+  };
+
 };

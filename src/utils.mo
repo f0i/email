@@ -25,6 +25,9 @@ module {
     splitOnUnquoted(text, func(c : Char) : Bool = c == sep);
   };
 
+  /// Split text on a character that is not inside quotes or after an escape character
+  /// The iter returns at least one item
+  /// The last element can contain unclosed quoted strings, unclosed comments or unfinished escape sequences.
   public func splitOnUnquoted(text : Text, isSep : Char -> Bool) : Iter.Iter<Text> {
     var escaped = false;
     var quoted = false;
