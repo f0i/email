@@ -83,7 +83,7 @@ do {
   let #err(e) = Email.parseOne("a@a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.de");
 
   print(debug_show e);
-  assert (Text.startsWith(e, #text "invalid domain name"));
+  assert (Text.startsWith(e, #text "Invalid domain"));
 };
 
 print("full example");

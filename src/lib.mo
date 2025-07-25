@@ -5,6 +5,8 @@ import { print } "mo:new-base/Debug";
 import Runtime "mo:new-base/Runtime";
 import Result "mo:new-base/Result";
 import Array "mo:new-base/Array";
+import Text "mo:new-base/Text";
+import Array "mo:new-base/Array";
 import { splitPre; splitPost; parseLocal; parseComments; parseDomain } "utils";
 import { validateLocal; validateDisplay; validateDomain } "validate";
 
@@ -65,6 +67,23 @@ module {
   public func parse(input : Text) : Iter.Iter<Result<Email>> {
     Utils.splitOnUnquotedChar(input, ',')
     |> Iter.map(_, parseOne);
+  };
+
+  public func toAddress(email : Email) : Text {
+    return email.local # "@" # email.domain;
+  };
+
+  public func toText(email : Email) : Text {
+    let comments = if (comments.size() == 0) {
+      "";
+    } else {
+      " " # Text.join(" ", Array.vals(comments));
+    };
+    if (email.displayName != "") {
+      return email.displayName # " <" # email.local # "@" # email.domain # ">";
+    };
+
+    return email.local # "@" # email.domain;
   };
 
 };
